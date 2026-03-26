@@ -170,7 +170,7 @@
             align-items: stretch;
         }
 
-        /* left sidebar dark warm */
+        /* left sidebar warm dark */
         .left-sidebar {
             width: 150px;
             background: rgba(20, 8, 5, 0.75);
@@ -205,6 +205,46 @@
             padding: 18px 16px;
             overflow-x: auto;
             min-height: 300px;
+        }
+        
+        /* welcome card inside main content - makes dashboard visible */
+        .welcome-card {
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 24px 20px;
+            border: 1px solid rgba(255, 120, 64, 0.6);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .welcome-card h2 {
+            color: #ffbc7a;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+        .welcome-card p {
+            color: #ffe0bc;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+        .stats-mini {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .stat-item {
+            background: #2d1b12;
+            padding: 8px 16px;
+            border-radius: 60px;
+            border-left: 3px solid #ff7840;
+            font-weight: 600;
+            color: #ffcf9a;
         }
 
         /* RIGHT SIDEBAR - chat panel area */
@@ -474,12 +514,12 @@
         </div>
         <div class="logo">iBuxCn</div>
         <nav class="nav-tabs" id="navTabs">
-            <div class="nav-tab active">Dash</div>
-            <div class="nav-tab">Analytics</div>
-            <div class="nav-tab">Reports</div>
-            <div class="nav-tab">Tasks</div>
-            <div class="nav-tab">Team</div>
-            <div class="nav-tab">Settings</div>
+            <div class="nav-tab active" data-tab="dash">Dash</div>
+            <div class="nav-tab" data-tab="analytics">Analytics</div>
+            <div class="nav-tab" data-tab="reports">Reports</div>
+            <div class="nav-tab" data-tab="tasks">Tasks</div>
+            <div class="nav-tab" data-tab="team">Team</div>
+            <div class="nav-tab" data-tab="settings">Settings</div>
         </nav>
         <div class="header-icons">
             <div class="notification-badge">
@@ -492,18 +532,27 @@
 
     <div class="main-container">
         <aside class="left-sidebar">
-            <a href="#" class="home-link" id="homeLink">Home</a>
+            <a href="#" class="home-link" id="homeLink">🏠 Home</a>
         </aside>
 
-        <main class="main-content">
-            <div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.6; color:#ffbc8a; font-size:0.7rem;"></div>
+        <main class="main-content" id="mainContent">
+            <!-- Dynamic content will be injected here, but we set default dashboard view -->
+            <div class="welcome-card" id="dynamicDashboardContent">
+                <h2>⚡ iBuxCn Dashboard</h2>
+                <p>Compact real-time interface with smart chat, rules & support hub. All systems operational.</p>
+                <div class="stats-mini">
+                    <div class="stat-item">📊 Active Sessions: 143</div>
+                    <div class="stat-item">💬 Messages: 28</div>
+                    <div class="stat-item">✅ Tasks: 12/24</div>
+                </div>
+            </div>
         </main>
 
         <aside class="right-sidebar" id="rightSidebar">
             <div class="action-buttons">
-                <button class="action-btn" data-panel="chat">CHAT</button>
-                <button class="action-btn" data-panel="rules">RULES</button>
-                <button class="action-btn" data-panel="support">SUPPORT</button>
+                <button class="action-btn" data-panel="chat">💬 CHAT</button>
+                <button class="action-btn" data-panel="rules">📜 RULES</button>
+                <button class="action-btn" data-panel="support">🛟 SUPPORT</button>
             </div>
             <div id="dynamicPanel" class="chat-panel">
                 <div class="panel-header">💬 CHAT</div>
@@ -521,11 +570,13 @@
 
     <script>
         (function() {
+            // Fix: Ensure all elements exist and content loads with proper dashboard
             let currentPanel = 'chat';
+            // Message history per panel
             const panelMessages = {
                 chat: [{ role: 'bot', text: 'Welcome! Type your message.' }],
-                rules: [{ role: 'bot', text: 'Community Rules:\n1. Be respectful.\n2. No spam.\n3. Follow guidelines.\n4. Enjoy the space!' }],
-                support: [{ role: 'bot', text: 'Support Hub:\nHow can we help? Ask anything, we are here 24/7.' }]
+                rules: [{ role: 'bot', text: '📌 Community Rules:\n1. Be respectful.\n2. No spam.\n3. Follow guidelines.\n4. Enjoy the space!' }],
+                support: [{ role: 'bot', text: '🎧 Support Hub:\nHow can we help? Ask anything, we are here 24/7.' }]
             };
             
             function renderMessages() {
@@ -550,23 +601,9 @@
                 else headerDiv.textContent = '🛟 SUPPORT';
             }
             
-            function rebuildPanel() {
-                const container = document.getElementById('dynamicPanel');
-                if (!container) return;
-                
-                const currentHeader = container.querySelector('.panel-header');
-                let headerText = '💬 CHAT';
-                if (currentPanel === 'chat') headerText = '💬 CHAT';
-                else if (currentPanel === 'rules') headerText = '📜 RULES';
-                else headerText = '🛟 SUPPORT';
-                
-                if (currentHeader) currentHeader.textContent = headerText;
-                
-                const messagesArea = document.getElementById('messagesArea');
-                if (messagesArea) {
-                    renderMessages();
-                }
-                
+            function rebuildPanelUI() {
+                updatePanelHeader();
+                renderMessages();
                 const inputField = document.getElementById('chatInput');
                 if (inputField) {
                     if (currentPanel === 'rules') inputField.placeholder = 'Ask about rules...';
@@ -575,15 +612,106 @@
                 }
             }
             
-            function attachEvents() {
+            // main content updater based on top tabs (interactive dashboard)
+            function updateMainContent(tabId) {
+                const mainContainer = document.getElementById('mainContent');
+                if (!mainContainer) return;
+                let contentHtml = '';
+                switch(tabId) {
+                    case 'dash':
+                        contentHtml = `<div class="welcome-card">
+                            <h2>📈 iBuxCn Dashboard</h2>
+                            <p>Compact real-time interface with smart chat, rules & support hub. All systems operational.</p>
+                            <div class="stats-mini">
+                                <div class="stat-item">📊 Active Sessions: 143</div>
+                                <div class="stat-item">💬 Messages: 28</div>
+                                <div class="stat-item">✅ Tasks: 12/24</div>
+                            </div>
+                        </div>`;
+                        break;
+                    case 'analytics':
+                        contentHtml = `<div class="welcome-card">
+                            <h2>📊 Analytics Overview</h2>
+                            <p>Real-time metrics: engagement +32%, page views 2.4k, chat interactions rising.</p>
+                            <div class="stats-mini">
+                                <div class="stat-item">📈 Growth: +18%</div>
+                                <div class="stat-item">👥 Users: 892</div>
+                                <div class="stat-item">⏱️ Avg session: 4m</div>
+                            </div>
+                        </div>`;
+                        break;
+                    case 'reports':
+                        contentHtml = `<div class="welcome-card">
+                            <h2>📑 Reports Hub</h2>
+                            <p>Weekly summary, activity logs, and support ticket reports available.</p>
+                            <div class="stats-mini">
+                                <div class="stat-item">📄 Generated: 14 reports</div>
+                                <div class="stat-item">✅ Resolved: 32 issues</div>
+                            </div>
+                        </div>`;
+                        break;
+                    case 'tasks':
+                        contentHtml = `<div class="welcome-card">
+                            <h2>✅ Task Manager</h2>
+                            <p>Current tasks: Optimize UI, Update chat responses, Review feedback.</p>
+                            <div class="stats-mini">
+                                <div class="stat-item">📋 Pending: 6</div>
+                                <div class="stat-item">✔️ Completed: 18</div>
+                            </div>
+                        </div>`;
+                        break;
+                    case 'team':
+                        contentHtml = `<div class="welcome-card">
+                            <h2>👥 Team iBuxCn</h2>
+                            <p>Core members: Alex, Jamie, Taylor, Morgan — support & development.</p>
+                            <div class="stats-mini">
+                                <div class="stat-item">🕒 Online: 5</div>
+                                <div class="stat-item">📅 Active today</div>
+                            </div>
+                        </div>`;
+                        break;
+                    case 'settings':
+                        contentHtml = `<div class="welcome-card">
+                            <h2>⚙️ Settings Panel</h2>
+                            <p>Preferences, notifications, theme options & security controls.</p>
+                            <div class="stats-mini">
+                                <div class="stat-item">🔒 Secure mode</div>
+                                <div class="stat-item">🌙 Dark theme active</div>
+                            </div>
+                        </div>`;
+                        break;
+                    default:
+                        contentHtml = `<div class="welcome-card">
+                            <h2>⚡ iBuxCn Dashboard</h2>
+                            <p>Compact real-time interface with smart chat, rules & support hub. All systems operational.</p>
+                            <div class="stats-mini"><div class="stat-item">✅ Ready</div></div>
+                        </div>`;
+                }
+                mainContainer.innerHTML = contentHtml;
+            }
+            
+            // Switch between chat/rules/support panels
+            function switchPanel(panel) {
+                currentPanel = panel;
+                document.querySelectorAll('.action-btn').forEach(btn => {
+                    const panelType = btn.getAttribute('data-panel');
+                    if (panelType === panel) btn.classList.add('active-panel');
+                    else btn.classList.remove('active-panel');
+                });
+                rebuildPanelUI();
+            }
+            
+            // attach fresh event handlers for send and emoji (prevent double binding issues)
+            function bindChatEvents() {
                 const sendBtn = document.getElementById('sendBtn');
                 const chatInput = document.getElementById('chatInput');
                 const emojiBtn = document.getElementById('emojiBtn');
                 
                 if (sendBtn) {
+                    // remove old listeners by replacing
                     const newSend = sendBtn.cloneNode(true);
                     sendBtn.parentNode.replaceChild(newSend, sendBtn);
-                    newSend.addEventListener('click', () => {
+                    newSend.addEventListener('click', function() {
                         const inputElem = document.getElementById('chatInput');
                         let message = inputElem ? inputElem.value.trim() : '';
                         if (message === '') return;
@@ -596,15 +724,15 @@
                         setTimeout(() => {
                             let reply = '';
                             if (currentPanel === 'chat') {
-                                reply = `You said: "${message}". Compact chat active.`;
+                                reply = `🤖 Echo: "${message}". Chat active. Ask me anything!`;
                             } else if (currentPanel === 'rules') {
-                                reply = `Rule response: "${message}" — please keep conversations clean.`;
+                                reply = `📜 Rule reminder: "${message}" — please follow community guidelines.`;
                             } else if (currentPanel === 'support') {
-                                reply = `Support: we received "${message}". Our team will follow up.`;
+                                reply = `🛟 Support: we received "${message}". Agent will respond shortly.`;
                             }
                             panelMessages[currentPanel].push({ role: 'bot', text: reply });
                             renderMessages();
-                        }, 200);
+                        }, 180);
                     });
                 }
                 
@@ -634,109 +762,110 @@
                 }
             }
             
-            function switchPanel(panel) {
-                currentPanel = panel;
+            // Initialize all UI interactions
+            function init() {
+                // Set main content default dash
+                updateMainContent('dash');
+                
+                // Attach top navigation tabs
+                const navTabs = document.querySelectorAll('.nav-tab');
+                navTabs.forEach(tab => {
+                    tab.addEventListener('click', function(e) {
+                        navTabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        const tabValue = this.getAttribute('data-tab');
+                        if (tabValue) updateMainContent(tabValue);
+                        // close mobile menu if open
+                        if (window.innerWidth <= 640) {
+                            const mobileNav = document.getElementById('navTabs');
+                            const overlayEl = document.getElementById('overlay');
+                            if (mobileNav) mobileNav.classList.remove('active');
+                            if (overlayEl) overlayEl.classList.remove('active');
+                        }
+                    });
+                });
+                
+                // Right panel action buttons
                 document.querySelectorAll('.action-btn').forEach(btn => {
-                    const panelType = btn.getAttribute('data-panel');
-                    if (panelType === panel) btn.classList.add('active-panel');
-                    else btn.classList.remove('active-panel');
+                    btn.addEventListener('click', (e) => {
+                        const panel = btn.getAttribute('data-panel');
+                        if (panel === 'chat') switchPanel('chat');
+                        else if (panel === 'rules') switchPanel('rules');
+                        else if (panel === 'support') switchPanel('support');
+                    });
                 });
-                updatePanelHeader();
-                const messagesArea = document.getElementById('messagesArea');
-                if (messagesArea) renderMessages();
-                const inputField = document.getElementById('chatInput');
-                if (inputField) {
-                    if (currentPanel === 'rules') inputField.placeholder = 'Ask about rules...';
-                    else if (currentPanel === 'support') inputField.placeholder = 'Describe your issue...';
-                    else inputField.placeholder = 'Write a message...';
+                
+                // set active chat button default
+                const defaultChat = document.querySelector('.action-btn[data-panel="chat"]');
+                if (defaultChat) defaultChat.classList.add('active-panel');
+                
+                bindChatEvents();
+                renderMessages();
+                
+                // home link interaction
+                const homeLink = document.getElementById('homeLink');
+                if (homeLink) {
+                    homeLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        updateMainContent('dash');
+                        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                        const dashTab = document.querySelector('.nav-tab[data-tab="dash"]');
+                        if (dashTab) dashTab.classList.add('active');
+                    });
                 }
-            }
-            
-            // initialize buttons
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const panel = btn.getAttribute('data-panel');
-                    if (panel === 'chat') switchPanel('chat');
-                    else if (panel === 'rules') switchPanel('rules');
-                    else if (panel === 'support') switchPanel('support');
-                });
-            });
-            
-            // set default active
-            const defaultChatBtn = document.querySelector('.action-btn[data-panel="chat"]');
-            if (defaultChatBtn) defaultChatBtn.classList.add('active-panel');
-            attachEvents();
-            
-            // Mobile menu - FIXED: no blur, solid background, fully visible
-            const mobileToggle = document.getElementById('mobileMenuToggle');
-            const navTabs = document.getElementById('navTabs');
-            const overlay = document.getElementById('overlay');
-            
-            function closeMobileMenu() {
-                if (navTabs) navTabs.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-            }
-            
-            function openMobileMenu() {
-                if (window.innerWidth <= 640) {
-                    if (navTabs) navTabs.classList.add('active');
-                    if (overlay) overlay.classList.add('active');
+                
+                // logout simulation
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        alert('🔒 Logout simulation — session would end.');
+                    });
                 }
-            }
-            
-            if (mobileToggle) {
-                mobileToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (navTabs && navTabs.classList.contains('active')) {
+                
+                // rect-icon console
+                const rectIcon = document.querySelector('.rect-icon');
+                if (rectIcon) rectIcon.addEventListener('click', () => console.log('Menu extra'));
+                
+                // Mobile menu functionality (fully fixed)
+                const mobileToggle = document.getElementById('mobileMenuToggle');
+                const navTabsContainer = document.getElementById('navTabs');
+                const overlayEl = document.getElementById('overlay');
+                
+                function closeMobileMenu() {
+                    if (navTabsContainer) navTabsContainer.classList.remove('active');
+                    if (overlayEl) overlayEl.classList.remove('active');
+                }
+                
+                function openMobileMenu() {
+                    if (window.innerWidth <= 640) {
+                        if (navTabsContainer) navTabsContainer.classList.add('active');
+                        if (overlayEl) overlayEl.classList.add('active');
+                    }
+                }
+                
+                if (mobileToggle) {
+                    mobileToggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (navTabsContainer && navTabsContainer.classList.contains('active')) {
+                            closeMobileMenu();
+                        } else {
+                            openMobileMenu();
+                        }
+                    });
+                }
+                
+                if (overlayEl) {
+                    overlayEl.addEventListener('click', closeMobileMenu);
+                }
+                
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 640 && navTabsContainer && navTabsContainer.classList.contains('active')) {
                         closeMobileMenu();
-                    } else {
-                        openMobileMenu();
                     }
                 });
             }
             
-            if (overlay) {
-                overlay.addEventListener('click', closeMobileMenu);
-            }
-            
-            // tab switching for top nav
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    if (window.innerWidth <= 640) closeMobileMenu();
-                });
-            });
-            
-            // home link
-            const homeLink = document.getElementById('homeLink');
-            if (homeLink) {
-                homeLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log('Home clicked');
-                });
-            }
-            
-            // logout
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    console.log('Logout triggered');
-                    alert('Logout simulation');
-                });
-            }
-            
-            const rectIcon = document.querySelector('.rect-icon');
-            if (rectIcon) rectIcon.addEventListener('click', () => console.log('Menu icon'));
-            
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 640 && navTabs && navTabs.classList.contains('active')) {
-                    closeMobileMenu();
-                }
-            });
-            
-            // ensure messages rendered at start
-            renderMessages();
+            init();
         })();
     </script>
 </body>
