@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>iBuxCn · Compact Dashboard</title>
+    <title>iBuxCn · Squished Compact Panel</title>
     <style>
         /* ---------- RESET + DARK ORANGE/RED GRADIENT ---------- */
         * {
@@ -12,15 +12,39 @@
             box-sizing: border-box;
         }
 
+        /* BODY: CENTERED CONTAINER — "SQUISHED SIZE" DESKTOP MODE */
         body {
             font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #2a1a0c 0%, #3d0f0f 50%, #2c0707 100%);
+            background: #0f0502;  /* deep solid background around the widget */
             min-height: 100vh;
-            font-size: 13px;
-            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 24px;
         }
 
-        /* header - semi-transparent but readable */
+        /* MAIN CARD — COMPACT, NOT FULL SCREEN, WITH MAX-WIDTH + MAX-HEIGHT CONSTRAINTS */
+        .dashboard-container {
+            max-width: 1280px;
+            width: 100%;
+            height: auto;
+            max-height: 90vh;
+            background: linear-gradient(135deg, #2a1a0c 0%, #3d0f0f 50%, #2c0707 100%);
+            border-radius: 28px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 100, 40, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s ease;
+        }
+
+        /* ENSURE INTERNAL SCROLLING IF CONTENT GETS TALL */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* header - semi-transparent but readable, more compact */
         .header {
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
@@ -31,16 +55,16 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             position: relative;
             z-index: 100;
+            flex-shrink: 0;
         }
 
         .logo {
             background: rgba(255, 80, 40, 0.25);
-            padding: 5px 14px;
+            padding: 4px 12px;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #ffb347;
             border: 1px solid #ff6a2c;
             border-radius: 10px;
@@ -48,7 +72,7 @@
             text-shadow: 0 0 3px rgba(0,0,0,0.5);
         }
 
-        /* NAV TABS — warm dark */
+        /* NAV TABS — warm dark, more condensed */
         .nav-tabs {
             display: flex;
             gap: 2px;
@@ -58,8 +82,8 @@
         }
 
         .nav-tab {
-            padding: 6px 18px;
-            font-size: 0.8rem;
+            padding: 4px 14px;
+            font-size: 0.75rem;
             font-weight: 500;
             background: transparent;
             border-radius: 32px;
@@ -67,6 +91,7 @@
             transition: all 0.15s ease;
             color: #ffcf9a;
             text-align: center;
+            white-space: nowrap;
         }
 
         .nav-tab:hover {
@@ -76,23 +101,21 @@
 
         .nav-tab.active {
             background: #ff6a2c;
-            box-shadow: 0 2px 8px rgba(255, 80, 20, 0.5);
+            box-shadow: 0 2px 6px rgba(255, 80, 20, 0.5);
             color: white;
             font-weight: 600;
         }
 
-        /* header icons */
         .header-icons {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        /* RECTANGULAR MINI SMALL BADGE GREEN LIGHT */
         .notification-badge {
             background: #1e4a2f;
             color: #b0ffc0;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 6px;
             font-size: 0.7rem;
             font-weight: 700;
@@ -104,22 +127,21 @@
             box-shadow: 0 0 4px rgba(80, 255, 100, 0.3);
         }
         .green-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: #5eff7e;
             border-radius: 50%;
             box-shadow: 0 0 6px #5eff7e;
             display: inline-block;
         }
 
-        /* logout button - icon only */
         .logout-icon {
             background: rgba(220, 60, 30, 0.6);
             border: 1px solid #ff7840;
             border-radius: 10px;
-            padding: 6px 12px;
+            padding: 4px 10px;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             color: #ffbc7a;
             transition: 0.2s;
@@ -137,15 +159,15 @@
         .rect-icon {
             background: rgba(255, 100, 50, 0.5);
             border-radius: 10px;
-            padding: 5px 12px;
+            padding: 4px 10px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #ffb56b;
             border: 1px solid #ff7740;
             cursor: pointer;
         }
 
-        /* mobile toggle */
+        /* mobile toggle (still present but squished layout mostly desktop) */
         .mobile-menu-toggle {
             display: none;
             flex-direction: column;
@@ -157,32 +179,34 @@
             border: 1px solid #ff6a2c;
         }
         .mobile-menu-toggle span {
-            width: 22px;
+            width: 20px;
             height: 2px;
             background: #ffae6a;
             border-radius: 2px;
         }
 
-        /* MAIN LAYOUT */
+        /* MAIN LAYOUT — more compact, squished proportions */
         .main-container {
             display: flex;
-            min-height: calc(100vh - 52px);
-            align-items: stretch;
+            flex: 1;
+            min-height: 0;  /* flex child respects height */
+            overflow: hidden;
         }
 
-        /* left sidebar dark warm */
+        /* left sidebar compact */
         .left-sidebar {
-            width: 150px;
+            width: 130px;
             background: rgba(20, 8, 5, 0.75);
             backdrop-filter: blur(4px);
             border-right: 1px solid rgba(255, 80, 40, 0.4);
-            padding: 14px 10px;
+            padding: 12px 8px;
+            flex-shrink: 0;
         }
 
         .home-link {
             display: block;
-            padding: 8px 12px;
-            font-size: 0.8rem;
+            padding: 6px 10px;
+            font-size: 0.75rem;
             font-weight: 500;
             background: rgba(0,0,0,0.6);
             border: 1px solid #ff8040;
@@ -198,40 +222,83 @@
             border-color: #ffbc70;
         }
 
-        /* main content */
+        /* main content — squished but functional */
         .main-content {
             flex: 1;
             background: rgba(0, 0, 0, 0.2);
-            padding: 18px 16px;
-            overflow-x: auto;
-            min-height: 300px;
+            padding: 14px 14px;
+            overflow-y: auto;
+            min-width: 0;
         }
 
-        /* RIGHT SIDEBAR - chat panel area */
+        /* compact placeholder card */
+        .info-card {
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 14px 18px;
+            border: 1px solid #ff7740aa;
+            backdrop-filter: blur(2px);
+        }
+        .info-card h3 {
+            font-size: 0.85rem;
+            color: #ffbc80;
+            margin-bottom: 10px;
+            letter-spacing: -0.2px;
+        }
+        .info-card p {
+            font-size: 0.7rem;
+            color: #ffdbb5;
+            line-height: 1.4;
+        }
+        .metrics-row {
+            display: flex;
+            gap: 14px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .metric {
+            background: #1f0f08cc;
+            border-radius: 16px;
+            padding: 8px 12px;
+            flex: 1;
+            text-align: center;
+            border: 1px solid #ff7a40;
+        }
+        .metric-value {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #ff9f60;
+        }
+        .metric-label {
+            font-size: 0.6rem;
+            color: #ffc491;
+        }
+
+        /* RIGHT SIDEBAR - compact chat panel, squished height */
         .right-sidebar {
-            width: 320px;
-            background: rgba(15, 5, 3, 0.85);
+            width: 290px;
+            background: rgba(15, 5, 3, 0.88);
             backdrop-filter: blur(8px);
             border-left: 1px solid rgba(255, 80, 40, 0.6);
-            padding: 16px 14px;
+            padding: 12px 12px;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
         }
 
-        /* action buttons group */
         .action-buttons {
             display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 6px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
         .action-btn {
             flex: 1;
             background: #2f1810;
             border: 1px solid #ff6a2c;
-            padding: 8px 0;
+            padding: 5px 0;
             border-radius: 40px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #ffbc8c;
             cursor: pointer;
@@ -249,33 +316,34 @@
             color: white;
         }
 
-        /* chat panel container */
+        /* chat panel squished height */
         .chat-panel {
             background: rgba(0, 0, 0, 0.7);
             border-radius: 20px;
             border: 1px solid #ff7e44;
             display: flex;
             flex-direction: column;
-            height: 380px;
+            height: 320px;
             overflow: hidden;
         }
         .messages-area {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            font-size: 0.75rem;
+            gap: 8px;
+            font-size: 0.7rem;
         }
         .message-bubble {
             max-width: 85%;
-            padding: 8px 12px;
-            border-radius: 18px;
+            padding: 6px 10px;
+            border-radius: 16px;
             background: #2c1a12;
             color: #ffdbb5;
             word-wrap: break-word;
             border: 1px solid #ff7940;
+            font-size: 0.7rem;
         }
         .message-bubble.user {
             align-self: flex-end;
@@ -290,8 +358,8 @@
         }
         .input-area {
             display: flex;
-            gap: 8px;
-            padding: 12px;
+            gap: 6px;
+            padding: 8px 10px;
             background: #1f0f08;
             border-top: 1px solid #ff6a2c;
             align-items: center;
@@ -301,9 +369,9 @@
             background: #311d14;
             border: 1px solid #ff854a;
             border-radius: 40px;
-            padding: 8px 14px;
+            padding: 6px 12px;
             color: #ffe2c4;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             outline: none;
         }
         .chat-input:focus {
@@ -314,12 +382,11 @@
             background: #ff5722;
             border: none;
             border-radius: 40px;
-            padding: 6px 16px;
+            padding: 5px 12px;
             font-weight: bold;
             color: white;
             cursor: pointer;
-            transition: 0.1s;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
         }
         .send-btn:hover {
             background: #ff7840;
@@ -328,9 +395,9 @@
             background: #3f231a;
             border: 1px solid #ff8048;
             border-radius: 40px;
-            padding: 6px 14px;
+            padding: 5px 10px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #ffbc80;
             transition: 0.1s;
         }
@@ -338,104 +405,25 @@
             background: #ff5e2e;
         }
         .panel-header {
-            padding: 10px 12px;
+            padding: 8px 12px;
             background: #2a140ecc;
             border-bottom: 1px solid #ff7840;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #ffbc80;
         }
 
-        /* ========== FIXED MOBILE MENU - CLEAR AND READABLE ========== */
-        @media screen and (max-width: 640px) {
-            .mobile-menu-toggle {
-                display: flex;
-            }
-            
-            .nav-tabs {
-                display: none;
-                position: fixed;
-                top: 60px;
-                left: 12px;
-                right: 12px;
-                background: #1f120b;
-                background-color: #23170f;
-                flex-direction: column;
-                gap: 8px;
-                border-radius: 24px;
+        /* ========== RESPONSIVE: For smaller desktop or narrow windows, still squished but flexible ========== */
+        @media screen and (max-width: 900px) {
+            body {
                 padding: 16px;
-                z-index: 2000;
-                border: 2px solid #ff7840;
-                box-shadow: 0 20px 35px rgba(0,0,0,0.5);
-                backdrop-filter: none;
-                background: linear-gradient(135deg, #2a1a12, #1f0f08);
             }
-            
-            .nav-tabs.active {
-                display: flex;
+            .dashboard-container {
+                max-width: 100%;
             }
-            
-            .nav-tab {
-                text-align: center;
-                padding: 12px 16px;
-                background: rgba(0,0,0,0.6);
-                border-radius: 60px;
-                font-size: 0.9rem;
-                font-weight: 600;
-                color: #ffcf9a;
-                border: 1px solid #ff7e44;
-                margin: 2px 0;
-            }
-            
-            .nav-tab.active {
-                background: #ff6a2c;
-                color: white;
-                border-color: #ffaa70;
-            }
-            
-            .nav-tab:hover {
-                background: #ff5e2a;
-                color: white;
-            }
-            
-            .overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.7);
-                backdrop-filter: blur(4px);
-                z-index: 1500;
-            }
-            
-            .overlay.active {
-                display: block;
-            }
-            
-            .header {
-                position: relative;
-                z-index: 1600;
-            }
-            
-            .logo {
-                order: 2;
-                margin-right: auto;
-            }
-            
-            .mobile-menu-toggle {
-                order: 1;
-            }
-            
-            .header-icons {
-                order: 3;
-            }
-        }
-        
-        @media screen and (max-width: 860px) {
-            .left-sidebar { width: 130px; }
-            .right-sidebar { width: 300px; }
+            .left-sidebar { width: 110px; }
+            .right-sidebar { width: 260px; }
+            .nav-tab { padding: 4px 10px; font-size: 0.7rem; }
         }
         
         @media screen and (max-width: 720px) {
@@ -447,17 +435,70 @@
                 display: flex; 
                 justify-content: center; 
                 background: rgba(0,0,0,0.7);
+                padding: 8px;
             }
-            .home-link { width: auto; display: inline-block; }
-            .main-content { order: 2; }
+            .home-link { width: auto; display: inline-block; font-size: 0.7rem; }
+            .main-content { order: 2; min-height: 180px; }
             .right-sidebar { order: 3; width: 100%; border-left: none; border-top: 1px solid #ff7840; }
-            .action-buttons { gap: 10px; }
+            .chat-panel { height: 300px; }
         }
         
         @media screen and (max-width: 480px) {
-            .right-sidebar { padding: 12px; }
-            .chat-panel { height: 340px; }
-            .nav-tab { padding: 10px 12px; font-size: 0.85rem; }
+            .right-sidebar { padding: 8px; }
+            .chat-panel { height: 280px; }
+            .notification-badge { padding: 2px 8px; font-size: 0.65rem; }
+            .nav-tab { padding: 4px 8px; font-size: 0.65rem; }
+        }
+
+        /* mobile menu overlay remains functional but less intrusive */
+        @media screen and (max-width: 640px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+            .nav-tabs {
+                display: none;
+                position: fixed;
+                top: 70px;
+                left: 12px;
+                right: 12px;
+                background: #1f120b;
+                flex-direction: column;
+                gap: 8px;
+                border-radius: 24px;
+                padding: 16px;
+                z-index: 2000;
+                border: 2px solid #ff7840;
+                box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+                background: linear-gradient(135deg, #2a1a12, #1f0f08);
+            }
+            .nav-tabs.active {
+                display: flex;
+            }
+            .nav-tab {
+                text-align: center;
+                padding: 8px 12px;
+                background: rgba(0,0,0,0.6);
+                border-radius: 60px;
+                font-size: 0.8rem;
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(4px);
+                z-index: 1500;
+            }
+            .overlay.active {
+                display: block;
+            }
+            .header {
+                position: relative;
+                z-index: 1600;
+            }
         }
         
         button, .nav-tab, .action-btn, .logout-icon, .rect-icon {
@@ -466,8 +507,9 @@
     </style>
 </head>
 <body>
-    <div class="overlay" id="overlay"></div>
+<div class="overlay" id="overlay"></div>
 
+<div class="dashboard-container">
     <header class="header">
         <div class="mobile-menu-toggle" id="mobileMenuToggle">
             <span></span><span></span><span></span>
@@ -492,23 +534,40 @@
 
     <div class="main-container">
         <aside class="left-sidebar">
-            <a href="#" class="home-link" id="homeLink">Home</a>
+            <a href="#" class="home-link" id="homeLink">🏠 Home</a>
         </aside>
 
         <main class="main-content">
-            <div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.6; color:#ffbc8a; font-size:0.7rem;"></div>
+            <div class="info-card">
+                <h3>📊 Squished Dashboard · Core Metrics</h3>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-value">127</div>
+                        <div class="metric-label">Active</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">+18%</div>
+                        <div class="metric-label">Growth</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4.8</div>
+                        <div class="metric-label">Rating</div>
+                    </div>
+                </div>
+                <p style="margin-top: 12px;">⚡ Compact layout · Optimized for desktop with squished proportions. Switch tabs or use chat panel.</p>
+            </div>
         </main>
 
         <aside class="right-sidebar" id="rightSidebar">
             <div class="action-buttons">
-                <button class="action-btn" data-panel="chat">CHAT</button>
-                <button class="action-btn" data-panel="rules">RULES</button>
-                <button class="action-btn" data-panel="support">SUPPORT</button>
+                <button class="action-btn" data-panel="chat">💬 CHAT</button>
+                <button class="action-btn" data-panel="rules">📜 RULES</button>
+                <button class="action-btn" data-panel="support">🛟 SUPPORT</button>
             </div>
             <div id="dynamicPanel" class="chat-panel">
                 <div class="panel-header">💬 CHAT</div>
                 <div class="messages-area" id="messagesArea">
-                    <div class="message-bubble bot">Welcome! Type your message.</div>
+                    <div class="message-bubble bot">Welcome! Type your message. (compact view)</div>
                 </div>
                 <div class="input-area">
                     <input type="text" class="chat-input" id="chatInput" placeholder="Write a message...">
@@ -518,226 +577,240 @@
             </div>
         </aside>
     </div>
+</div>
 
-    <script>
-        (function() {
-            let currentPanel = 'chat';
-            const panelMessages = {
-                chat: [{ role: 'bot', text: 'Welcome! Type your message.' }],
-                rules: [{ role: 'bot', text: 'Community Rules:\n1. Be respectful.\n2. No spam.\n3. Follow guidelines.\n4. Enjoy the space!' }],
-                support: [{ role: 'bot', text: 'Support Hub:\nHow can we help? Ask anything, we are here 24/7.' }]
-            };
-            
-            function renderMessages() {
-                const messagesArea = document.getElementById('messagesArea');
-                if (!messagesArea) return;
-                const messages = panelMessages[currentPanel] || [];
-                messagesArea.innerHTML = '';
-                messages.forEach(msg => {
-                    const bubble = document.createElement('div');
-                    bubble.className = `message-bubble ${msg.role === 'user' ? 'user' : 'bot'}`;
-                    bubble.textContent = msg.text;
-                    messagesArea.appendChild(bubble);
-                });
-                messagesArea.scrollTop = messagesArea.scrollHeight;
-            }
-            
-            function updatePanelHeader() {
-                const headerDiv = document.querySelector('#dynamicPanel .panel-header');
-                if (!headerDiv) return;
-                if (currentPanel === 'chat') headerDiv.textContent = '💬 CHAT';
-                else if (currentPanel === 'rules') headerDiv.textContent = '📜 RULES';
-                else headerDiv.textContent = '🛟 SUPPORT';
-            }
-            
-            function rebuildPanel() {
-                const container = document.getElementById('dynamicPanel');
-                if (!container) return;
-                
-                const currentHeader = container.querySelector('.panel-header');
-                let headerText = '💬 CHAT';
-                if (currentPanel === 'chat') headerText = '💬 CHAT';
-                else if (currentPanel === 'rules') headerText = '📜 RULES';
-                else headerText = '🛟 SUPPORT';
-                
-                if (currentHeader) currentHeader.textContent = headerText;
-                
-                const messagesArea = document.getElementById('messagesArea');
-                if (messagesArea) {
-                    renderMessages();
-                }
-                
-                const inputField = document.getElementById('chatInput');
-                if (inputField) {
-                    if (currentPanel === 'rules') inputField.placeholder = 'Ask about rules...';
-                    else if (currentPanel === 'support') inputField.placeholder = 'Describe your issue...';
-                    else inputField.placeholder = 'Write a message...';
-                }
-            }
-            
-            function attachEvents() {
-                const sendBtn = document.getElementById('sendBtn');
-                const chatInput = document.getElementById('chatInput');
-                const emojiBtn = document.getElementById('emojiBtn');
-                
-                if (sendBtn) {
-                    const newSend = sendBtn.cloneNode(true);
-                    sendBtn.parentNode.replaceChild(newSend, sendBtn);
-                    newSend.addEventListener('click', () => {
-                        const inputElem = document.getElementById('chatInput');
-                        let message = inputElem ? inputElem.value.trim() : '';
-                        if (message === '') return;
-                        
-                        if (!panelMessages[currentPanel]) panelMessages[currentPanel] = [];
-                        panelMessages[currentPanel].push({ role: 'user', text: message });
-                        renderMessages();
-                        if (inputElem) inputElem.value = '';
-                        
-                        setTimeout(() => {
-                            let reply = '';
-                            if (currentPanel === 'chat') {
-                                reply = `You said: "${message}". Compact chat active.`;
-                            } else if (currentPanel === 'rules') {
-                                reply = `Rule response: "${message}" — please keep conversations clean.`;
-                            } else if (currentPanel === 'support') {
-                                reply = `Support: we received "${message}". Our team will follow up.`;
-                            }
-                            panelMessages[currentPanel].push({ role: 'bot', text: reply });
-                            renderMessages();
-                        }, 200);
-                    });
-                }
-                
-                if (emojiBtn) {
-                    const newEmoji = emojiBtn.cloneNode(true);
-                    emojiBtn.parentNode.replaceChild(newEmoji, emojiBtn);
-                    newEmoji.addEventListener('click', () => {
-                        const inputField = document.getElementById('chatInput');
-                        if (inputField) {
-                            inputField.value += '😊';
-                            inputField.focus();
-                        }
-                    });
-                }
-                
-                const inputElement = document.getElementById('chatInput');
-                if (inputElement) {
-                    const freshInput = inputElement.cloneNode(true);
-                    inputElement.parentNode.replaceChild(freshInput, inputElement);
-                    freshInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            const sendButton = document.getElementById('sendBtn');
-                            if (sendButton) sendButton.click();
-                        }
-                    });
-                }
-            }
-            
-            function switchPanel(panel) {
-                currentPanel = panel;
-                document.querySelectorAll('.action-btn').forEach(btn => {
-                    const panelType = btn.getAttribute('data-panel');
-                    if (panelType === panel) btn.classList.add('active-panel');
-                    else btn.classList.remove('active-panel');
-                });
-                updatePanelHeader();
-                const messagesArea = document.getElementById('messagesArea');
-                if (messagesArea) renderMessages();
-                const inputField = document.getElementById('chatInput');
-                if (inputField) {
-                    if (currentPanel === 'rules') inputField.placeholder = 'Ask about rules...';
-                    else if (currentPanel === 'support') inputField.placeholder = 'Describe your issue...';
-                    else inputField.placeholder = 'Write a message...';
-                }
-            }
-            
-            // initialize buttons
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const panel = btn.getAttribute('data-panel');
-                    if (panel === 'chat') switchPanel('chat');
-                    else if (panel === 'rules') switchPanel('rules');
-                    else if (panel === 'support') switchPanel('support');
-                });
+<script>
+    (function() {
+        let currentPanel = 'chat';
+        const panelMessages = {
+            chat: [{ role: 'bot', text: 'Welcome! Type your message. (compact chat)' }],
+            rules: [{ role: 'bot', text: '📜 Community Rules:\n1. Be respectful.\n2. No spam.\n3. Follow guidelines.\n4. Keep it clean.' }],
+            support: [{ role: 'bot', text: '🛟 Support Hub:\nAsk anything, we are here 24/7.\nHow can we help you today?' }]
+        };
+        
+        function renderMessages() {
+            const messagesArea = document.getElementById('messagesArea');
+            if (!messagesArea) return;
+            const messages = panelMessages[currentPanel] || [];
+            messagesArea.innerHTML = '';
+            messages.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.className = `message-bubble ${msg.role === 'user' ? 'user' : 'bot'}`;
+                bubble.textContent = msg.text;
+                messagesArea.appendChild(bubble);
             });
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+        
+        function updatePanelHeader() {
+            const headerDiv = document.querySelector('#dynamicPanel .panel-header');
+            if (!headerDiv) return;
+            if (currentPanel === 'chat') headerDiv.textContent = '💬 CHAT · compact';
+            else if (currentPanel === 'rules') headerDiv.textContent = '📜 RULES · guidelines';
+            else headerDiv.textContent = '🛟 SUPPORT · live help';
+        }
+        
+        function rebuildPanelUI() {
+            updatePanelHeader();
+            renderMessages();
+            const inputField = document.getElementById('chatInput');
+            if (inputField) {
+                if (currentPanel === 'rules') inputField.placeholder = 'Ask about rules...';
+                else if (currentPanel === 'support') inputField.placeholder = 'Describe your issue...';
+                else inputField.placeholder = 'Write a message...';
+            }
+        }
+        
+        function attachDynamicEvents() {
+            const sendBtn = document.getElementById('sendBtn');
+            const chatInput = document.getElementById('chatInput');
+            const emojiBtn = document.getElementById('emojiBtn');
             
-            // set default active
-            const defaultChatBtn = document.querySelector('.action-btn[data-panel="chat"]');
-            if (defaultChatBtn) defaultChatBtn.classList.add('active-panel');
-            attachEvents();
-            
-            // Mobile menu - FIXED: no blur, solid background, fully visible
-            const mobileToggle = document.getElementById('mobileMenuToggle');
-            const navTabs = document.getElementById('navTabs');
-            const overlay = document.getElementById('overlay');
-            
-            function closeMobileMenu() {
-                if (navTabs) navTabs.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
+            if (sendBtn) {
+                const newSend = sendBtn.cloneNode(true);
+                sendBtn.parentNode.replaceChild(newSend, sendBtn);
+                newSend.addEventListener('click', () => {
+                    const inputElem = document.getElementById('chatInput');
+                    let message = inputElem ? inputElem.value.trim() : '';
+                    if (message === '') return;
+                    
+                    if (!panelMessages[currentPanel]) panelMessages[currentPanel] = [];
+                    panelMessages[currentPanel].push({ role: 'user', text: message });
+                    renderMessages();
+                    if (inputElem) inputElem.value = '';
+                    
+                    setTimeout(() => {
+                        let reply = '';
+                        if (currentPanel === 'chat') {
+                            reply = `💬 Reply: "${message}" — compact chat active.`;
+                        } else if (currentPanel === 'rules') {
+                            reply = `📜 Rule feedback: "${message}" — please stay kind & respectful.`;
+                        } else if (currentPanel === 'support') {
+                            reply = `🛟 Support: we got "${message}". Our team will reply soon.`;
+                        }
+                        panelMessages[currentPanel].push({ role: 'bot', text: reply });
+                        renderMessages();
+                    }, 150);
+                });
             }
             
-            function openMobileMenu() {
-                if (window.innerWidth <= 640) {
-                    if (navTabs) navTabs.classList.add('active');
-                    if (overlay) overlay.classList.add('active');
-                }
-            }
-            
-            if (mobileToggle) {
-                mobileToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (navTabs && navTabs.classList.contains('active')) {
-                        closeMobileMenu();
-                    } else {
-                        openMobileMenu();
+            if (emojiBtn) {
+                const newEmoji = emojiBtn.cloneNode(true);
+                emojiBtn.parentNode.replaceChild(newEmoji, emojiBtn);
+                newEmoji.addEventListener('click', () => {
+                    const inputField = document.getElementById('chatInput');
+                    if (inputField) {
+                        inputField.value += '😊';
+                        inputField.focus();
                     }
                 });
             }
             
-            if (overlay) {
-                overlay.addEventListener('click', closeMobileMenu);
-            }
-            
-            // tab switching for top nav
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    if (window.innerWidth <= 640) closeMobileMenu();
+            const inputElement = document.getElementById('chatInput');
+            if (inputElement) {
+                const freshInput = inputElement.cloneNode(true);
+                inputElement.parentNode.replaceChild(freshInput, inputElement);
+                freshInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const sendButton = document.getElementById('sendBtn');
+                        if (sendButton) sendButton.click();
+                    }
                 });
+            }
+        }
+        
+        function switchPanel(panel) {
+            currentPanel = panel;
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                const panelType = btn.getAttribute('data-panel');
+                if (panelType === panel) btn.classList.add('active-panel');
+                else btn.classList.remove('active-panel');
             });
-            
-            // home link
-            const homeLink = document.getElementById('homeLink');
-            if (homeLink) {
-                homeLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log('Home clicked');
-                });
+            updatePanelHeader();
+            renderMessages();
+            const inputField = document.getElementById('chatInput');
+            if (inputField) {
+                if (currentPanel === 'rules') inputField.placeholder = 'Ask about rules...';
+                else if (currentPanel === 'support') inputField.placeholder = 'Describe your issue...';
+                else inputField.placeholder = 'Write a message...';
             }
-            
-            // logout
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    console.log('Logout triggered');
-                    alert('Logout simulation');
-                });
+        }
+        
+        // init action buttons
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const panel = btn.getAttribute('data-panel');
+                if (panel === 'chat') switchPanel('chat');
+                else if (panel === 'rules') switchPanel('rules');
+                else if (panel === 'support') switchPanel('support');
+            });
+        });
+        
+        // set default active chat button
+        const defaultChat = document.querySelector('.action-btn[data-panel="chat"]');
+        if (defaultChat) defaultChat.classList.add('active-panel');
+        attachDynamicEvents();
+        
+        // mobile menu logic (compact, still works)
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const navTabs = document.getElementById('navTabs');
+        const overlay = document.getElementById('overlay');
+        
+        function closeMobileMenu() {
+            if (navTabs) navTabs.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+        }
+        
+        function openMobileMenu() {
+            if (window.innerWidth <= 640) {
+                if (navTabs) navTabs.classList.add('active');
+                if (overlay) overlay.classList.add('active');
             }
-            
-            const rectIcon = document.querySelector('.rect-icon');
-            if (rectIcon) rectIcon.addEventListener('click', () => console.log('Menu icon'));
-            
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 640 && navTabs && navTabs.classList.contains('active')) {
+        }
+        
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (navTabs && navTabs.classList.contains('active')) {
                     closeMobileMenu();
+                } else {
+                    openMobileMenu();
                 }
             });
-            
-            // ensure messages rendered at start
-            renderMessages();
-        })();
-    </script>
+        }
+        
+        if (overlay) {
+            overlay.addEventListener('click', closeMobileMenu);
+        }
+        
+        // top nav tab switching
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                if (window.innerWidth <= 640) closeMobileMenu();
+                // small demo feedback: update main content metrics style
+                const mainInfo = document.querySelector('.info-card');
+                if (mainInfo) {
+                    const tabName = this.innerText.trim();
+                    const metricDiv = mainInfo.querySelector('.metrics-row');
+                    if (metricDiv) {
+                        if (tabName === 'Analytics') {
+                            metricDiv.innerHTML = `<div class="metric"><div class="metric-value">+32%</div><div class="metric-label">Views</div></div>
+                                                    <div class="metric"><div class="metric-value">843</div><div class="metric-label">Clicks</div></div>
+                                                    <div class="metric"><div class="metric-value">2.4s</div><div class="metric-label">Load</div></div>`;
+                        } else if (tabName === 'Reports') {
+                            metricDiv.innerHTML = `<div class="metric"><div class="metric-value">12</div><div class="metric-label">New Reports</div></div>
+                                                    <div class="metric"><div class="metric-value">94%</div><div class="metric-label">Accuracy</div></div>
+                                                    <div class="metric"><div class="metric-value">✅</div><div class="metric-label">Status</div></div>`;
+                        } else {
+                            metricDiv.innerHTML = `<div class="metric"><div class="metric-value">127</div><div class="metric-label">Active</div></div>
+                                                    <div class="metric"><div class="metric-value">+18%</div><div class="metric-label">Growth</div></div>
+                                                    <div class="metric"><div class="metric-value">4.8</div><div class="metric-label">Rating</div></div>`;
+                        }
+                    }
+                }
+            });
+        });
+        
+        const homeLink = document.getElementById('homeLink');
+        if (homeLink) {
+            homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                // reset metrics to default
+                const metricDiv = document.querySelector('.info-card .metrics-row');
+                if (metricDiv) {
+                    metricDiv.innerHTML = `<div class="metric"><div class="metric-value">127</div><div class="metric-label">Active</div></div>
+                                            <div class="metric"><div class="metric-value">+18%</div><div class="metric-label">Growth</div></div>
+                                            <div class="metric"><div class="metric-value">4.8</div><div class="metric-label">Rating</div></div>`;
+                }
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                const dashTab = document.querySelector('.nav-tab:first-child');
+                if (dashTab) dashTab.classList.add('active');
+            });
+        }
+        
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                alert('🔒 Logout simulation · squished dashboard');
+            });
+        }
+        
+        const rectIcon = document.querySelector('.rect-icon');
+        if (rectIcon) rectIcon.addEventListener('click', () => console.log('Menu icon clicked (compact)'));
+        
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 640 && navTabs && navTabs.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+        
+        // final render
+        renderMessages();
+        updatePanelHeader();
+    })();
+</script>
 </body>
 </html>
