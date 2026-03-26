@@ -36,14 +36,34 @@
             z-index: 100;
         }
 
+        /* Logo styling - now contains image */
         .logo {
             background: rgba(255, 80, 40, 0.25);
             padding: 5px 14px;
+            border: 1px solid #ff6a2c;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        }
+        .logo:hover {
+            background: rgba(255, 80, 40, 0.45);
+            border-color: #ffaa66;
+        }
+        .logo img {
+            height: 32px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+        }
+        
+        /* Fallback text style if image fails */
+        .logo-text-fallback {
             font-weight: 700;
             font-size: 1rem;
             color: #ffb347;
-            border: 1px solid #ff6a2c;
-            border-radius: 10px;
             letter-spacing: -0.2px;
             text-shadow: 0 0 3px rgba(0,0,0,0.5);
         }
@@ -498,6 +518,7 @@
             .right-sidebar { padding: 12px; }
             .chat-panel { height: 340px; }
             .nav-tab { padding: 10px 12px; font-size: 0.85rem; }
+            .logo img { height: 26px; }
         }
         
         button, .nav-tab, .action-btn, .logout-icon, .rect-icon {
@@ -512,7 +533,9 @@
         <div class="mobile-menu-toggle" id="mobileMenuToggle">
             <span></span><span></span><span></span>
         </div>
-        <div class="logo">iBuxCn</div>
+        <div class="logo" id="logoContainer">
+            <img src="https://imglink.cc/cdn/_kyTq7xzuI.png" alt="iBuxCn Logo" id="logoImage" style="height: 20px; width: auto;">
+        </div>
         <nav class="nav-tabs" id="navTabs">
             <div class="nav-tab active" data-tab="dash">Dash</div>
             <div class="nav-tab" data-tab="analytics">Analytics</div>
@@ -536,8 +559,7 @@
         </aside>
 
         <main class="main-content" id="mainContent">
-            <!-- Dynamic content will be injected here, but we set default dashboard view -->
-            <div class="welcome-card" id="dynamicDashboardContent">
+            <div class="welcome-card">
                 <h2>⚡ iBuxCn Dashboard</h2>
                 <p>Compact real-time interface with smart chat, rules & support hub. All systems operational.</p>
                 <div class="stats-mini">
@@ -570,9 +592,25 @@
 
     <script>
         (function() {
-            // Fix: Ensure all elements exist and content loads with proper dashboard
+            // Handle logo image loading - if fails, show styled text
+            const logoImg = document.getElementById('logoImage');
+            const logoContainer = document.getElementById('logoContainer');
+            
+            if (logoImg) {
+                logoImg.onerror = function() {
+                    // If image fails to load, replace with text
+                    if (logoContainer) {
+                        logoContainer.innerHTML = '<span class="logo-text-fallback">iBuxCn</span>';
+                    }
+                };
+                
+                // Also handle successful load
+                logoImg.onload = function() {
+                    console.log('Logo loaded successfully');
+                };
+            }
+            
             let currentPanel = 'chat';
-            // Message history per panel
             const panelMessages = {
                 chat: [{ role: 'bot', text: 'Welcome! Type your message.' }],
                 rules: [{ role: 'bot', text: '📌 Community Rules:\n1. Be respectful.\n2. No spam.\n3. Follow guidelines.\n4. Enjoy the space!' }],
@@ -612,7 +650,6 @@
                 }
             }
             
-            // main content updater based on top tabs (interactive dashboard)
             function updateMainContent(tabId) {
                 const mainContainer = document.getElementById('mainContent');
                 if (!mainContainer) return;
@@ -690,7 +727,6 @@
                 mainContainer.innerHTML = contentHtml;
             }
             
-            // Switch between chat/rules/support panels
             function switchPanel(panel) {
                 currentPanel = panel;
                 document.querySelectorAll('.action-btn').forEach(btn => {
@@ -701,14 +737,11 @@
                 rebuildPanelUI();
             }
             
-            // attach fresh event handlers for send and emoji (prevent double binding issues)
             function bindChatEvents() {
                 const sendBtn = document.getElementById('sendBtn');
-                const chatInput = document.getElementById('chatInput');
                 const emojiBtn = document.getElementById('emojiBtn');
                 
                 if (sendBtn) {
-                    // remove old listeners by replacing
                     const newSend = sendBtn.cloneNode(true);
                     sendBtn.parentNode.replaceChild(newSend, sendBtn);
                     newSend.addEventListener('click', function() {
@@ -762,12 +795,9 @@
                 }
             }
             
-            // Initialize all UI interactions
             function init() {
-                // Set main content default dash
                 updateMainContent('dash');
                 
-                // Attach top navigation tabs
                 const navTabs = document.querySelectorAll('.nav-tab');
                 navTabs.forEach(tab => {
                     tab.addEventListener('click', function(e) {
@@ -775,7 +805,6 @@
                         this.classList.add('active');
                         const tabValue = this.getAttribute('data-tab');
                         if (tabValue) updateMainContent(tabValue);
-                        // close mobile menu if open
                         if (window.innerWidth <= 640) {
                             const mobileNav = document.getElementById('navTabs');
                             const overlayEl = document.getElementById('overlay');
@@ -785,7 +814,6 @@
                     });
                 });
                 
-                // Right panel action buttons
                 document.querySelectorAll('.action-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const panel = btn.getAttribute('data-panel');
@@ -795,14 +823,12 @@
                     });
                 });
                 
-                // set active chat button default
                 const defaultChat = document.querySelector('.action-btn[data-panel="chat"]');
                 if (defaultChat) defaultChat.classList.add('active-panel');
                 
                 bindChatEvents();
                 renderMessages();
                 
-                // home link interaction
                 const homeLink = document.getElementById('homeLink');
                 if (homeLink) {
                     homeLink.addEventListener('click', (e) => {
@@ -814,7 +840,6 @@
                     });
                 }
                 
-                // logout simulation
                 const logoutBtn = document.getElementById('logoutBtn');
                 if (logoutBtn) {
                     logoutBtn.addEventListener('click', () => {
@@ -822,11 +847,9 @@
                     });
                 }
                 
-                // rect-icon console
                 const rectIcon = document.querySelector('.rect-icon');
                 if (rectIcon) rectIcon.addEventListener('click', () => console.log('Menu extra'));
                 
-                // Mobile menu functionality (fully fixed)
                 const mobileToggle = document.getElementById('mobileMenuToggle');
                 const navTabsContainer = document.getElementById('navTabs');
                 const overlayEl = document.getElementById('overlay');
